@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import Loader from '../components/Loader';
 import Island from '../models/Island';
 import Sky from '../models/sky';
@@ -8,22 +8,40 @@ import Plane from '../models/Plane';
 
 
 const Home = () => {
+  const [isRotating, setIsRotating] = useState(false);
+
   const adjustIslandForScreenSize = () => {
     let screenScale = null;
     let screenPosition = [0, -6.5, -43];
     let rotation = [0.1, 4.7, 0];
 
-    console.log("Inner width",window.innerWidth)
     if (window.innerWidth < 768) {
-      screenScale = [0.09, 0.09, 0.09];
+      screenScale = [0.9, 0.9, 0.9];
+      screenPosition = [0, -6.5, -43.4];
     } else {
-      screenScale = [.07, .07, .07];
+      screenScale = [1, 1, 1];
+      screenPosition = [0, -6.5, -43.4];
     }
     return [screenScale, screenPosition, rotation];
   };
+  
+  const adjustBiplaneForScreenSize = () => {
+    let screenScale, screenPosition;
+
+    // If screen width is less than 768px, adjust the scale and position
+    if (window.innerWidth < 768) {
+      screenScale = [1.5, 1.5, 1.5];
+      screenPosition = [0, -1.5, 0];
+    } else {
+      screenScale = [3, 3, 3];
+      screenPosition = [0, -4, -4];
+    }
+
+    return [screenScale, screenPosition];
+  };
 
   const [islandScale, islandPosition, islandRotation] = adjustIslandForScreenSize();
-  console.log(islandScale, islandPosition, islandRotation);
+  const [planeScale, planePosition] = adjustBiplaneForScreenSize();
 
   return (
     <section      
@@ -34,7 +52,7 @@ const Home = () => {
       </div> */}
 
       <Canvas
-        className='w-full h-screen bg-transparent'
+        className={`w-full h-screen bg-transparent ${isRotating ? 'cursor-grabbing' : 'cursor-grab'}`}
         camera={{ near: 0.1, far: 1000 }} // items close or farther than these values will not be rendered
       >
         {/* Suspense renders the loading screen */}
@@ -50,13 +68,21 @@ const Home = () => {
           <hemisphereLight skyColor="#b1e1ff" groundColor="#000000" intensity={1} />
 
           <Bird />
-          <Plane />
+          <Plane 
+          scale={planeScale}
+          position={planePosition}
+          isRotating={isRotating}
+          rotation={[0, 20.1, 0]} // rotaion of the plane
+          />
           <Sky />
 
           <Island
-            postion={islandPosition}
+            isRotating={isRotating}
+            setIsRotating={setIsRotating}
+            // setCurrentStage={setCurrentStage}
+            position={islandPosition}
+            rotation={[0.1, 4.7077, 0]}
             scale={islandScale}
-            rotation={islandRotation}
           />
 
         </Suspense>
