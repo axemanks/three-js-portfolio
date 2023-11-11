@@ -14,46 +14,57 @@ import { a } from '@react-spring/three';
 
 import islandScene from '../assets/3d/island.glb';
 
-const Island = ({ isRotating, setIsRotating, setCurrentStage, ...props }) => {
+export function Island({ 
+  isRotating, 
+  setIsRotating, 
+  setCurrentStage, 
+  currentFocusPoint,
+  ...props
+}) {
   const islandRef = useRef();
-
+// Get access to the Three.js renderer and viewport
   const { gl, viewport } = useThree();
   const { nodes, materials } = useGLTF(islandScene);
-  // refs for mouse location
+  // Use a ref for the last mouse x position
   const lastX = useRef(0);
+  // Use a ref for rotation speed
   const rotationSpeed = useRef(0);
+  // Define a damping factor to control rotation damping
   const dampingFactor = 0.95;
 
+  // Handle pointer (mouse or touch) down event
   const handlePointerDown = (e) => {
     e.stopPropagation();
     e.preventDefault();
     setIsRotating(true);
-    // Touch or Mouse?
+    // Calculate the clientX based on whether it's a touch event or a mouse event
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    // store location of mouse
+    // Store the current clientX position for reference
     lastX.current = clientX;
   };
 
+   // Handle pointer (mouse or touch) up event
   const handlePointerUp = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    setIsRotating(false);
-    
+    setIsRotating(false);    
   };
 
+    // Handle pointer (mouse or touch) move event
   const handlePointerMove = (e) => {
     e.stopPropagation();
     e.preventDefault();
     if (isRotating) {
-      // Was the event from Touch or Mouse?
+      // If rotation is enabled, calculate the change in clientX position
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       // calculate delta (difference between current and last mouse location)
       const delta = (clientX - lastX.current) / viewport.width;
       // update island based on mouse movement
       islandRef.current.rotation.y += delta * 0.01 * Math.PI;
-      // store location of mouse
+       // Update the reference for the last clientX position
       lastX.current = clientX;
-      rotationSpeed.current = delta + 0.01 * Math.PI;
+      // Update the rotation speed
+      rotationSpeed.current = delta * 0.01 * Math.PI;
     }
   };
 

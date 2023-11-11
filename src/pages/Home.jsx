@@ -32,7 +32,6 @@ const Home = () => {
     let screenScale = null;
     let screenPosition = [0, -6.5, -43];
     let rotation = [0.1, 4.7, 0];
-
     if (window.innerWidth < 768) {
       screenScale = [0.9, 0.9, 0.9];
       screenPosition = [0, -6.5, -43.4];
@@ -45,7 +44,6 @@ const Home = () => {
   
   const adjustBiplaneForScreenSize = () => {
     let screenScale, screenPosition;
-
     // If screen width is less than 768px, adjust the scale and position
     if (window.innerWidth < 768) {
       screenScale = [1.5, 1.5, 1.5];
@@ -54,7 +52,6 @@ const Home = () => {
       screenScale = [3, 3, 3];
       screenPosition = [0, -4, -4];
     }
-
     return [screenScale, screenPosition];
   };
 
